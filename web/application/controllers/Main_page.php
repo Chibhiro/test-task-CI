@@ -77,11 +77,15 @@ class Main_page extends MY_Controller
 
     public function like_comment(int $comment_id)
     {
+        $comment = new Comment_model($comment_id);
+        $comment->increment_likes(User_model::get_user());
         // TODO: task 3, лайк комментария
     }
 
     public function like_post(int $post_id)
     {
+        $post = new Post_model($post_id);
+        $post->increment_likes(User_model::get_user());
         // TODO: task 3, лайк поста
     }
 
