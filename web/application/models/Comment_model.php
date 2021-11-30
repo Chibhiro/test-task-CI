@@ -216,7 +216,7 @@ class Comment_model extends Emerald_Model {
 
     public static function create(array $data)
     {
-        App::get_s()->from(self::CLASS_TABLE)->insert($data)->execute();
+        echo App::get_s()->from(self::CLASS_TABLE)->insert($data)->execute();
         return new static(App::get_s()->get_insert_id());
     }
 
