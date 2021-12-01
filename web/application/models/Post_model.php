@@ -151,6 +151,7 @@ class Post_model extends Emerald_Model
      */
     public function get_comments():array
     {
+        return $this->comments = Comment_model::get_all_by_assign_id($this->get_id());
        // TODO: task 2, комментирование
     }
 
@@ -187,7 +188,7 @@ class Post_model extends Emerald_Model
 
     public static function create(array $data)
     {
-        App::get_s()->from(self::CLASS_TABLE)->insert($data)->execute();
+        echo App::get_s()->from(self::CLASS_TABLE)->insert($data)->execute();
         return new static(App::get_s()->get_insert_id());
     }
 
@@ -207,6 +208,11 @@ class Post_model extends Emerald_Model
         return static::transform_many(App::get_s()->from(self::CLASS_TABLE)->many());
     }
 
+
+    public static function get_one_post(int $post_id)
+    {
+        return static::transform_one(App::get_s()->from(self::CLASS_TABLE)->where(['id' => $post_id])->select()->one());
+    }
     /**
      * @param User_model $user
      *
@@ -215,6 +221,19 @@ class Post_model extends Emerald_Model
      */
     public function increment_likes(User_model $user): bool
     {
+        $user_likes = $user->get_likes_balance();
+        $post_likes = $this->get_likes();
+        App::get_s()->set_transaction_repeatable_read()->execute();
+        App::get_s()->start_trans()->execute();
+        $user->set_likes_balance($user_likes - 1);
+        $this->set_likes($post_likes + 1);
+        if(App::get_s()->get_affected_rows() > 0){
+            App::get_s()->commit()->execute();
+        }else{
+            App::get_s()->rollback()->execute();
+        }
+        return App::get_s()->is_affected();
+
         // TODO: task 3, лайк поста
     }
 

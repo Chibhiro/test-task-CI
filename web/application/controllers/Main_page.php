@@ -1,8 +1,10 @@
 <?php
 
 use Model\Boosterpack_model;
+use Model\Comment_model;
 use Model\Post_model;
 use Model\User_model;
+use Model\Login_model;
 
 /**
  * Created by PhpStorm.
@@ -10,6 +12,7 @@ use Model\User_model;
  * Date: 10.11.2018
  * Time: 21:36
  */
+
 class Main_page extends MY_Controller
 {
 
@@ -27,7 +30,6 @@ class Main_page extends MY_Controller
     public function index()
     {
         $user = User_model::get_user();
-
         App::get_ci()->load->view('main_page', ['user' => User_model::preparation($user, 'default')]);
     }
 
@@ -46,27 +48,44 @@ class Main_page extends MY_Controller
     public function login()
     {
         // TODO: task 1, аутентификация
+        $form_login = $this->input->post('login');
+        $form_pass = $this->input->post('password');
 
-        return $this->response_success();
+        $user = Login_model::login($form_login, $form_pass);
+        if(!empty($user)) {
+            return $this->response_success(['user' => User_model::preparation($user, 'main_page')]);
+        }else{
+            return $this->response_error(System\Libraries\Core::RESPONSE_GENERIC_NEED_AUTH);
+        }
     }
 
     public function logout()
     {
+        Login_model::logout();
+        redirect('/');
         // TODO: task 1, аутентификация
     }
 
     public function comment()
     {
+        $user_id = User_model::get_user()->get_id();
+        $assign_id = $this->input->post('postId');
+        $text = $this->input->post('commentText');
+        Comment_model::create(['user_id' => $user_id, 'assign_id' => $assign_id, 'text' => $text, 'likes' => 0]);
         // TODO: task 2, комментирование
     }
 
     public function like_comment(int $comment_id)
     {
+        $comment = new Comment_model($comment_id);
+        $comment->increment_likes(User_model::get_user());
         // TODO: task 3, лайк комментария
     }
 
     public function like_post(int $post_id)
     {
+        $post = new Post_model($post_id);
+        $post->increment_likes(User_model::get_user());
         // TODO: task 3, лайк поста
     }
 
@@ -80,6 +99,8 @@ class Main_page extends MY_Controller
 
     public function get_post(int $post_id) {
         // TODO получения поста по id
+        $post =  Post_model::preparation(Post_model::get_one_post($post_id), 'full_info');
+        return $this->response_success(['post' => $post]);
     }
 
     public function buy_boosterpack()

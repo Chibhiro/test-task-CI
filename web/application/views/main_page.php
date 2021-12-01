@@ -46,7 +46,7 @@ use Model\User_model;
         <li class="nav-item">
             <?  if (User_model::is_logged()) {?>
                 <a href="" role="button">
-                    Likes:
+                    Likes: <?= $user->likes ?>
                 </a>
             <? }?>
         </li>
@@ -130,6 +130,7 @@ use Model\User_model;
         <div class="modal-body">
           <form>
             <div class="form-group">
+
               <label for="exampleInputEmail1">Please enter login</label>
               <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" v-model="login" required>
               <div class="invalid-feedback" v-if="invalidLogin">
@@ -148,6 +149,7 @@ use Model\User_model;
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button class="btn btn-primary" @click.prevent="logIn">Login</button>
+
         </div>
       </div>
     </div>

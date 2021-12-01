@@ -347,6 +347,7 @@ class User_model extends Emerald_model {
     public static function find_user_by_email(string $email): User_model
     {
         // TODO: task 1, аутентификация
+        // return
     }
 
     /**
@@ -445,7 +446,7 @@ class User_model extends Emerald_model {
 
             $o->personaname = $data->get_personaname();
             $o->avatarfull = $data->get_avatarfull();
-
+            $o->likes = $data->get_likes_balance();
             $o->time_created = $data->get_time_created();
             $o->time_updated = $data->get_time_updated();
         }
